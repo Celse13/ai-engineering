@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const roadmap = [
   {
@@ -181,7 +181,14 @@ const tagLabels: Record<string, string> = { video: "Video", docs: "Docs / Read",
 
 export default function App() {
   const [openWeek, setOpenWeek] = useState<string | null>("Week 1");
-  const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [completed, setCompleted] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem("roadmap-progress");
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem("roadmap-progress", JSON.stringify(completed));
+  }, [completed]);
 
   const toggle = (w: string) => setOpenWeek(openWeek === w ? null : w);
   const toggleComplete = (w: string) => setCompleted(p => ({ ...p, [w]: !p[w] }));
